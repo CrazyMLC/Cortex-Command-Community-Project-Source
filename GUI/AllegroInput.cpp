@@ -236,64 +236,30 @@ void AllegroInput::Update(void)
 		m_PrevNetworkMouseButtonsStates[player][0] = m_NetworkMouseButtonsEvents[player][0];
 		m_PrevNetworkMouseButtonsStates[player][1] = m_NetworkMouseButtonsEvents[player][1];
 		m_PrevNetworkMouseButtonsStates[player][2] = m_NetworkMouseButtonsEvents[player][2];
-	}
-	else 
-	{
-		// Left mouse button
-		if (mouse_b & AMBLEFT) {
-			if (m_MouseButtonsStates[0] == Up) { // Previously was up
-				m_MouseButtonsEvents[0] = Pushed;
+	} else {
+		if (!m_KeyJoyMouseCursor) {
+			if (mouse_b & AMBLEFT) {
+				m_MouseButtonsEvents[0] = (m_MouseButtonsStates[0] == Up) ? Pushed : Repeat;
+				m_MouseButtonsStates[0] = Down;
+			} else {
+				m_MouseButtonsEvents[0] = (m_MouseButtonsStates[0] == Down) ? Released : None;
+				m_MouseButtonsStates[0] = Up;
 			}
-			else { // m_MouseButtonsStates[0] == Down
-				m_MouseButtonsEvents[0] = Repeat;
-			}
-			m_MouseButtonsStates[0] = Down;
 		}
-		else { // Left mouse button up
-			if (m_MouseButtonsStates[0] == Down) {
-				m_MouseButtonsEvents[0] = Released;
-			}
-			else { // m_MouseButtonsStates[0] == Up
-				m_MouseButtonsEvents[0] = None;
-			}
-			m_MouseButtonsStates[0] = Up;
-		}
-		// Middle mouse button
+
 		if (mouse_b & AMBMIDDLE) {
-			if (m_MouseButtonsStates[1] == Up) { // Previously was up
-				m_MouseButtonsEvents[1] = Pushed;
-			}
-			else { // m_MouseButtonsStates[1] == Down
-				m_MouseButtonsEvents[1] = Repeat;
-			}
+			m_MouseButtonsEvents[1] = (m_MouseButtonsStates[1] == Up) ? Pushed : Repeat;
 			m_MouseButtonsStates[1] = Down;
-		}
-		else { // Middle mouse button up
-			if (m_MouseButtonsStates[1] == Down) {
-				m_MouseButtonsEvents[1] = Released;
-			}
-			else { // m_MouseButtonsStates[1] == Up
-				m_MouseButtonsEvents[1] = None;
-			}
+		} else {
+			m_MouseButtonsEvents[1] = (m_MouseButtonsStates[1] == Down) ? Released : None;
 			m_MouseButtonsStates[1] = Up;
 		}
-		// Right mouse button
+
 		if (mouse_b & AMBRIGHT) {
-			if (m_MouseButtonsStates[2] == Up) { // Previously was up
-				m_MouseButtonsEvents[2] = Pushed;
-			}
-			else { // m_MouseButtonsStates[2] == Down
-				m_MouseButtonsEvents[2] = Repeat;
-			}
+			m_MouseButtonsEvents[2] = (m_MouseButtonsStates[2] == Up) ? Pushed : Repeat;
 			m_MouseButtonsStates[2] = Down;
-		}
-		else { // Right mouse button up
-			if (m_MouseButtonsStates[2] == Down) {
-				m_MouseButtonsEvents[2] = Released;
-			}
-			else { // m_MouseButtonsStates[2] == Up
-				m_MouseButtonsEvents[2] = None;
-			}
+		} else {
+			m_MouseButtonsEvents[2] = (m_MouseButtonsStates[2] == Down) ? Released : None;
 			m_MouseButtonsStates[2] = Up;
 		}
 	}
@@ -357,7 +323,20 @@ void AllegroInput::Update(void)
         mouse_x = MIN((g_FrameMan.GetResX() * mouseDenominator) - 3, mouse_x);
         mouse_y = MIN((g_FrameMan.GetResY() * mouseDenominator) - 3, mouse_y);
 
-    }
+		// Button states/presses, Primary - ACTUALLY make either button work, we don't have use for secondary in menus
+		if (g_UInputMan.MenuButtonHeld(UInputMan::MENU_EITHER)) {
+			m_MouseButtonsStates[0] = Down;
+			m_MouseButtonsEvents[0] = Repeat;
+		}
+		if (g_UInputMan.MenuButtonPressed(UInputMan::MENU_EITHER)) {
+			m_MouseButtonsEvents[0] = Pushed;
+		}
+		if (g_UInputMan.MenuButtonReleased(UInputMan::MENU_EITHER)) {
+			m_MouseButtonsEvents[0] = Released;
+		} else if (m_MouseButtonsStates[0] == Down && m_MouseButtonsEvents[0] == Released) {
+			m_MouseButtonsEvents[0] = None;
+		}
+	}
 
     // Update the mouse position of this GUIInput, based on the allegro mouse vars (which may have been altered by joystick or keyboard input)
 //    m_MouseX = mouse_x;

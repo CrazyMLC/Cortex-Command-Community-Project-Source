@@ -212,7 +212,7 @@ protected:
 
     int            m_Modifier;
 
-    // Whether the keyboard and joysticks also control the mouise
+    // Whether the keyboard and joysticks also control the mouse
     bool           m_KeyJoyMouseCursor;
 };
 
