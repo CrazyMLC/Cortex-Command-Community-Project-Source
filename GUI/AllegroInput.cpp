@@ -329,11 +329,13 @@ void AllegroInput::Update(void)
 			m_MouseButtonsEvents[0] = Repeat;
 		}
 		if (g_UInputMan.MenuButtonPressed(UInputMan::MENU_EITHER)) {
+			m_MouseButtonsStates[0] = Down;
 			m_MouseButtonsEvents[0] = Pushed;
-		}
-		if (g_UInputMan.MenuButtonReleased(UInputMan::MENU_EITHER)) {
+		} else if (g_UInputMan.MenuButtonReleased(UInputMan::MENU_EITHER)) {
+			m_MouseButtonsStates[0] = Up;
 			m_MouseButtonsEvents[0] = Released;
-		} else if (m_MouseButtonsStates[0] == Down && m_MouseButtonsEvents[0] == Released) {
+		} else if (m_MouseButtonsEvents[0] == Released) {
+			m_MouseButtonsStates[0] = Up;
 			m_MouseButtonsEvents[0] = None;
 		}
 	}
