@@ -273,122 +273,122 @@ GUIPanel *GUIComboBox::GetPanel(void)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Called when receiving a signal.
 
-void GUIComboBox::ReceiveSignal(GUIPanel *Source, int Code, int Data)
+void GUIComboBox::ReceiveSignal(GUIPanel* Source, int Code, int Data)
 {
-    assert(Source);
+	assert(Source);
 
-	 int sourcePanelID = Source->GetPanelID();
+	int sourcePanelID = Source->GetPanelID();
 
-    // ComboBoxButton
-    if (sourcePanelID == m_Button->GetPanelID())
-    {
-        // Clicked and list panel is not visible. open the list panel.
-        if (Code == GUIComboBoxButton::Clicked && !m_ListPanel->_GetVisible()) {
-            m_ListPanel->_SetVisible(true);
-            m_ListPanel->SetFocus();
-            m_ListPanel->CaptureMouse();
+	// ComboBoxButton
+	if (sourcePanelID == m_Button->GetPanelID())
+	{
+		// Clicked and list panel is not visible. open the list panel.
+		if (Code == GUIComboBoxButton::Clicked && !m_ListPanel->_GetVisible()) {
+			m_ListPanel->_SetVisible(true);
+			m_ListPanel->SetFocus();
+			m_ListPanel->CaptureMouse();
 
-            // Force a redraw
-            m_ListPanel->EndUpdate();
+			// Force a redraw
+			m_ListPanel->EndUpdate();
 
-            // Make this panel go above the rest
-            m_ListPanel->ChangeZPosition(TopMost);
+			// Make this panel go above the rest
+			m_ListPanel->ChangeZPosition(TopMost);
 
-            // Save the current selection
-            if (m_ListPanel->GetSelectedIndex() >= 0 && m_ListPanel->GetSelectedIndex() < m_ListPanel->GetSelectionList()->size())
-                m_OldSelection = m_ListPanel->GetSelectedIndex();
+			// Save the current selection
+			if (m_ListPanel->GetSelectedIndex() >= 0 && m_ListPanel->GetSelectedIndex() < m_ListPanel->GetSelectionList()->size())
+				m_OldSelection = m_ListPanel->GetSelectedIndex();
 
-            AddEvent(GUIEvent::Notification, Dropped, 0);
-        }
-    }
+			AddEvent(GUIEvent::Notification, Dropped, 0);
+		}
+	}
 
-    // Textbox
-    else if (sourcePanelID == m_TextPanel->GetPanelID()) {
-        
-        // MouseDown
-        if (Code == GUITextPanel::MouseDown && m_DropDownStyle == DropDownList && Data & MOUSE_LEFT) {
+	// Textbox
+	else if (sourcePanelID == m_TextPanel->GetPanelID()) {
+
+		// MouseDown
+		if (Code == GUITextPanel::MouseDown && m_DropDownStyle == DropDownList && Data & MOUSE_LEFT) {
 			// Drop
-            m_ListPanel->_SetVisible(true);
-            m_ListPanel->SetFocus();
-            m_ListPanel->CaptureMouse();
+			m_ListPanel->_SetVisible(true);
+			m_ListPanel->SetFocus();
+			m_ListPanel->CaptureMouse();
 
-            // Force a redraw
-            m_ListPanel->EndUpdate();
+			// Force a redraw
+			m_ListPanel->EndUpdate();
 
-            // Make this panel go above the rest
-            m_ListPanel->ChangeZPosition(TopMost);
+			// Make this panel go above the rest
+			m_ListPanel->ChangeZPosition(TopMost);
 
-            // Save the current selection
-            if (m_ListPanel->GetSelectedIndex() >= 0 && m_ListPanel->GetSelectedIndex() < m_ListPanel->GetSelectionList()->size())
-                m_OldSelection = m_ListPanel->GetSelectedIndex();
+			// Save the current selection
+			if (m_ListPanel->GetSelectedIndex() >= 0 && m_ListPanel->GetSelectedIndex() < m_ListPanel->GetSelectionList()->size())
+				m_OldSelection = m_ListPanel->GetSelectedIndex();
 
-            AddEvent(GUIEvent::Notification, Dropped, 0);
-        }
+			AddEvent(GUIEvent::Notification, Dropped, 0);
+		}
 
-    }
+	}
 
-    // ListPanel
-    else if (sourcePanelID == m_ListPanel->GetPanelID()) {
+	// ListPanel
+	else if (sourcePanelID == m_ListPanel->GetPanelID()) {
 
-        // MouseMove
-        if (Code == GUIListPanel::MouseMove)// || Code == GUIListPanel::MouseUp)
-        {
-            m_Button->SetPushed(false);
-            return;
-        }
-    
-        int mouseX = 0;
-        int mouseY = 0;
-        m_Manager->GetInputController()->GetMousePosition(&mouseX, &mouseY);
+		// MouseMove
+		if (Code == GUIListPanel::MouseMove)// || Code == GUIListPanel::MouseUp)
+		{
+			m_Button->SetPushed(false);
+			return;
+		}
+
+		int mouseX = 0;
+		int mouseY = 0;
+		m_Manager->GetInputController()->GetMousePosition(&mouseX, &mouseY);
 		// Mouse down anywhere outside the list panel.
-        if (Code == GUIListPanel::Click)
-        {
-            // Hide the list panel
-            m_ListPanel->_SetVisible(false);
-            m_ListPanel->ReleaseMouse();
-            m_Manager->SetFocus(0);
-            m_Button->SetPushed(false);
+		if (Code == GUIListPanel::Click)
+		{
+			// Hide the list panel
+			m_ListPanel->_SetVisible(false);
+			m_ListPanel->ReleaseMouse();
+			m_Manager->SetFocus(0);
+			m_Button->SetPushed(false);
 
-            // Restore the old selection
-            m_ListPanel->SetSelectedIndex(m_OldSelection);
+			// Restore the old selection
+			m_ListPanel->SetSelectedIndex(m_OldSelection);
 
-            AddEvent(GUIEvent::Notification, Closed, 0);
-        }
+			AddEvent(GUIEvent::Notification, Closed, 0);
+		}
 
-        // Select on mouseup instead of down so we don't accidentally click stuff behind the disappearing listbox immediately after
-        // Also only work if inside the actual list, and not its scrollbars
-        else if (Code == GUIListPanel::MouseUp && m_ListPanel->PointInsideList(mouseX, mouseY)) {
-            // Hide the list panel
-            m_ListPanel->_SetVisible(false);
-            m_ListPanel->ReleaseMouse();
-            m_Manager->SetFocus(0);
-            m_Button->SetPushed(false);
+		// Select on mouseup instead of down so we don't accidentally click stuff behind the disappearing listbox immediately after
+		// Also only work if inside the actual list, and not its scrollbars
+		else if (Code == GUIListPanel::MouseUp && m_ListPanel->PointInsideList(mouseX, mouseY)) {
+			// Hide the list panel
+			m_ListPanel->_SetVisible(false);
+			m_ListPanel->ReleaseMouse();
+			m_Manager->SetFocus(0);
+			m_Button->SetPushed(false);
 
-            AddEvent(GUIEvent::Notification, Closed, 0);
+			AddEvent(GUIEvent::Notification, Closed, 0);
 
-            // Set the text to the item in the list panel
-            GUIListPanel::Item *Item = m_ListPanel->GetSelected();
-            if (Item)
-            {
-                m_TextPanel->SetText(Item->m_Name);
-                // Save the current selection - NO, don't, we want to keep this so we can still roll back to previous selection later
+			// Set the text to the item in the list panel
+			GUIListPanel::Item* Item = m_ListPanel->GetSelected();
+			if (Item)
+			{
+				m_TextPanel->SetText(Item->m_Name);
+				// Save the current selection - NO, don't, we want to keep this so we can still roll back to previous selection later
 //                m_OldSelection = m_ListPanel->GetSelectedIndex();
-            }
-            else
-            {
-                // Restore the old selection
-                m_ListPanel->SetSelectedIndex(m_OldSelection);
-            }
-        }
+			}
+			else
+			{
+				// Restore the old selection
+				m_ListPanel->SetSelectedIndex(m_OldSelection);
+			}
+		}
 
-        if (m_DropDownStyle == DropDownList) {
-            // Set the text to the item in the list panel
-            GUIListPanel::Item *Item = m_ListPanel->GetSelected();
-            if (Item)
-                m_TextPanel->SetText(Item->m_Name);
-        }
+		if (m_DropDownStyle == DropDownList) {
+			// Set the text to the item in the list panel
+			GUIListPanel::Item* Item = m_ListPanel->GetSelected();
+			if (Item)
+				m_TextPanel->SetText(Item->m_Name);
+		}
 
-    }
+	}
 }
 
 
