@@ -510,7 +510,7 @@ void GUIListPanel::OnMouseDown(int X, int Y, int Buttons, int Modifier)
         SelectItem(X, Y, Modifier);
         SendSignal(MouseDown, Buttons);
     } else {
-        // Clicked anywhere
+        // Click signifies mouse down anywhere outside the list panel.
         SendSignal(Click, Buttons);
     }
 }

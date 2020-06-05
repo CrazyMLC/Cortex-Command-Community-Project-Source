@@ -191,8 +191,8 @@ protected:
 
     // Mouse button states
     // Order:    Left, Middle, Right
-    int            m_MouseButtonsEvents[3];
-    int            m_MouseButtonsStates[3];
+	int            m_MouseButtonsEvents[3];
+	int            m_MouseButtonsStates[3];
 
 	static int            m_NetworkMouseButtonsEvents[4][3];
 	static int            m_NetworkMouseButtonsStates[4][3];

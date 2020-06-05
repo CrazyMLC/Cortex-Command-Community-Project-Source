@@ -277,10 +277,12 @@ void GUIComboBox::ReceiveSignal(GUIPanel *Source, int Code, int Data)
 {
     assert(Source);
 
+	 int sourcePanelID = Source->GetPanelID();
+
     // ComboBoxButton
-    if (Source->GetPanelID() == m_Button->GetPanelID())
+    if (sourcePanelID == m_Button->GetPanelID())
     {
-        // Clicked
+        // Clicked and list panel is not visible. open the list panel.
         if (Code == GUIComboBoxButton::Clicked && !m_ListPanel->_GetVisible()) {
             m_ListPanel->_SetVisible(true);
             m_ListPanel->SetFocus();
@@ -301,11 +303,11 @@ void GUIComboBox::ReceiveSignal(GUIPanel *Source, int Code, int Data)
     }
 
     // Textbox
-    if (Source->GetPanelID() == m_TextPanel->GetPanelID()) {
+    else if (sourcePanelID == m_TextPanel->GetPanelID()) {
         
         // MouseDown
         if (Code == GUITextPanel::MouseDown && m_DropDownStyle == DropDownList && Data & MOUSE_LEFT) {
-            // Drop
+			// Drop
             m_ListPanel->_SetVisible(true);
             m_ListPanel->SetFocus();
             m_ListPanel->CaptureMouse();
@@ -326,7 +328,7 @@ void GUIComboBox::ReceiveSignal(GUIPanel *Source, int Code, int Data)
     }
 
     // ListPanel
-    if (Source->GetPanelID() == m_ListPanel->GetPanelID()) {
+    else if (sourcePanelID == m_ListPanel->GetPanelID()) {
 
         // MouseMove
         if (Code == GUIListPanel::MouseMove)// || Code == GUIListPanel::MouseUp)
@@ -335,12 +337,11 @@ void GUIComboBox::ReceiveSignal(GUIPanel *Source, int Code, int Data)
             return;
         }
     
-        // Click
         int mouseX = 0;
         int mouseY = 0;
         m_Manager->GetInputController()->GetMousePosition(&mouseX, &mouseY);
-        // Unless we check for the mouse not being over the otehr components, this causes irritating accidental closing of the list when clicking on the textbox and button
-        if (Code == GUIListPanel::Click && !m_TextPanel->PointInside(mouseX, mouseY) && !m_Button->PointInside(mouseX, mouseY))
+		// Mouse down anywhere outside the list panel.
+        if (Code == GUIListPanel::Click)
         {
             // Hide the list panel
             m_ListPanel->_SetVisible(false);
@@ -355,8 +356,8 @@ void GUIComboBox::ReceiveSignal(GUIPanel *Source, int Code, int Data)
         }
 
         // Select on mouseup instead of down so we don't accidentally click stuff behind the disappearing listbox immediately after
-        // Also only work if inside the acutal list, and not its scrollbars
-        if (Code == GUIListPanel::MouseUp && m_ListPanel->PointInsideList(mouseX, mouseY)) {
+        // Also only work if inside the actual list, and not its scrollbars
+        else if (Code == GUIListPanel::MouseUp && m_ListPanel->PointInsideList(mouseX, mouseY)) {
             // Hide the list panel
             m_ListPanel->_SetVisible(false);
             m_ListPanel->ReleaseMouse();
