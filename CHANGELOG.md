@@ -27,12 +27,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Game will now Abort with error message when trying to load a copy of a non-existent Presetname that is an AtomGroup, Attachable or AEmitter.
 
+- Comboboxes (dropdown lists) can now also be closed by clicking on their top part.
+
 ### Fixed
 
 - Control schemes will no longer get deleted when being configured.
 Resetting the control scheme will load a preset instead of leaving it blank. (Issue #121)
 
 - Time scale can no longer be lowered to 0 through the performance stats interface.
+
+- Fixed issue with double clicks and missing clicks in menus (anything that uses AllegroInput).
 
 ### Removed
 
