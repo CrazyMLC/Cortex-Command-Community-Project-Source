@@ -148,7 +148,6 @@ void GUIManager::Update(void)
     {
         m_Input->GetMousePosition(&MouseX, &MouseY);
         m_Input->GetMouseButtons(MouseButtons, MouseStates);
-        Modifier = m_Input->GetModifier();
 
         // Calculate mouse movement
         DeltaX = MouseX - m_OldMouseX;
