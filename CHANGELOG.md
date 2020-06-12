@@ -36,6 +36,9 @@ Resetting the control scheme will load a preset instead of leaving it blank. (Is
 
 - Time scale can no longer be lowered to 0 through the performance stats interface.
 
+- Fixed issue where clicking a combobox's scrollbar would release the mouse, thus causing unexpected behavior like not being able to close the list by clicking outside of it.
+	Fixed issue where comboboxes did not save the current selection, thus if the combobox was deselected without making a selection then the selection would revert to the default value instead of the last selected value.
+
 - Fixed issue with double clicks and missing clicks in menus (anything that uses AllegroInput).
 
 ### Removed
