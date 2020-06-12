@@ -1064,49 +1064,40 @@ void GUIListPanel::OnLoseFocus(void)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Called when receiving a signal.
 
-void GUIListPanel::ReceiveSignal(GUIPanel *Source, int Code, int Data)
+void GUIListPanel::ReceiveSignal(GUIPanel* Source, int Code, int Data)
 {
-    // ChangeValue signal from scrollpanels?
-    assert(Source);
+	// ChangeValue signal from scrollpanels?
+	assert(Source);
 
-    if (Source->GetPanelID() == m_VertScroll->GetPanelID() ||
-       Source->GetPanelID() == m_HorzScroll->GetPanelID()) {
+	int sourcePanelID = Source->GetPanelID();
 
-        if (Code == GUIScrollPanel::ChangeValue)
-            BuildBitmap(false, true);
-    }
+	if ((sourcePanelID == m_VertScroll->GetPanelID() || sourcePanelID == m_HorzScroll->GetPanelID()) && Code == GUIScrollPanel::ChangeValue) {
+		BuildBitmap(false, true);
+	}
 
-    // Vertical Scrollbar
-    if (Source->GetPanelID() == m_VertScroll->GetPanelID()) {
-        // Grab
-        if (Code == GUIScrollPanel::Grab) {
-            m_CapturedVert = true;
-            CaptureMouse();
-        }
-        // Release
-        if (Code == GUIScrollPanel::Release) {
-            m_CapturedVert = false;
-// WTF IS THE BIG IDEA WITH THIS ANYWAY??!
-//            if (!m_ExternalCapture)
-                ReleaseMouse();
-        }
-    }
+	// Vertical Scrollbar
+	else if (sourcePanelID == m_VertScroll->GetPanelID()) {
+		// Grab
+		if (Code == GUIScrollPanel::Grab) {
+			m_CapturedVert = true;
+		}
+		// Release
+		else if (Code == GUIScrollPanel::Release) {
+			m_CapturedVert = false;
+		}
+	}
 
-    // Horizontal Scrollbar
-    if (Source->GetPanelID() == m_HorzScroll->GetPanelID()) {
-        // Grab
-        if (Code == GUIScrollPanel::Grab) {
-            m_CapturedHorz = true;
-            CaptureMouse();
-        }
-        // Release
-        if (Code == GUIScrollPanel::Release) {
-            m_CapturedHorz = false;
-// WTF IS THE BIG IDEA WITH THIS ANYWAY??!
-//            if (!m_ExternalCapture)
-                ReleaseMouse();
-        }
-    }
+	// Horizontal Scrollbar
+	else if (sourcePanelID == m_HorzScroll->GetPanelID()) {
+		// Grab
+		if (Code == GUIScrollPanel::Grab) {
+			m_CapturedHorz = true;
+		}
+		// Release
+		else if (Code == GUIScrollPanel::Release) {
+			m_CapturedHorz = false;
+		}
+	}
 }
 
 
