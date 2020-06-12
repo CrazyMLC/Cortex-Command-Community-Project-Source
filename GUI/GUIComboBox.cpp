@@ -294,9 +294,9 @@ void GUIComboBox::ReceiveSignal(GUIPanel* Source, int Code, int Data)
 			// Make this panel go above the rest
 			m_ListPanel->ChangeZPosition(TopMost);
 
-			// Save the current selection
-			if (m_ListPanel->GetSelectedIndex() >= 0 && m_ListPanel->GetSelectedIndex() < m_ListPanel->GetSelectionList()->size())
-				m_OldSelection = m_ListPanel->GetSelectedIndex();
+            // Save the current selection
+            if (m_ListPanel->GetSelectedIndex() >= 0 && m_ListPanel->GetSelectedIndex() < m_ListPanel->GetItemList()->size())
+                m_OldSelection = m_ListPanel->GetSelectedIndex();
 
 			AddEvent(GUIEvent::Notification, Dropped, 0);
 		}
@@ -318,9 +318,9 @@ void GUIComboBox::ReceiveSignal(GUIPanel* Source, int Code, int Data)
 			// Make this panel go above the rest
 			m_ListPanel->ChangeZPosition(TopMost);
 
-			// Save the current selection
-			if (m_ListPanel->GetSelectedIndex() >= 0 && m_ListPanel->GetSelectedIndex() < m_ListPanel->GetSelectionList()->size())
-				m_OldSelection = m_ListPanel->GetSelectedIndex();
+            // Save the current selection
+            if (m_ListPanel->GetSelectedIndex() >= 0 && m_ListPanel->GetSelectedIndex() < m_ListPanel->GetItemList()->size())
+                m_OldSelection = m_ListPanel->GetSelectedIndex();
 
 			AddEvent(GUIEvent::Notification, Dropped, 0);
 		}
