@@ -131,6 +131,7 @@ void GUIComboBox::Create(GUIProperties *Props)
     m_ListPanel->SetMultiSelect(false);
     m_ListPanel->SetHotTracking(true);
     m_ListPanel->EnableScrollbars(false, true);
+	m_ListPanel->SetMouseScrolling(true);
         
 
     // Create the button

@@ -174,6 +174,15 @@ public:
     int GetModifier(void);
 
 
+	/// <summary>
+	/// This function returns how much the mouse scroll wheel has moved. positive integer is scroll up, negative is scroll down.
+	/// </summary>
+	/// <returns>mouse scroll wheel movement in integer value</returns>
+	int GetMouseWheelChange() {
+		return m_MouseWheelChange;
+	}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Private member variable and method declarations
 
@@ -206,6 +215,8 @@ protected:
 	static int			   m_NetworkMouseX[4], m_NetworkMouseY[4];
 
 	int				m_Player;
+
+	int				m_MouseWheelChange; //!< the amount and direction that the mouse wheel has moved.
 
     // These offset the mouse positions so that the cursor is shifted for all events
     int            m_MouseOffsetX, m_MouseOffsetY;

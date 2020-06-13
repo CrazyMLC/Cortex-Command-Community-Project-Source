@@ -262,6 +262,18 @@ void AllegroInput::Update(void)
 			m_MouseButtonsEvents[2] = (m_MouseButtonsStates[2] == Down) ? Released : None;
 			m_MouseButtonsStates[2] = Up;
 		}
+
+		if (m_Player < 0 || m_Player >= 4) {
+			int players = 4;
+			for (int i = 0; i < players; i++) {
+				m_MouseWheelChange = g_UInputMan.MouseWheelMovedByPlayer(i);
+				if (abs(m_MouseWheelChange) >= 1) {
+					break;
+				}
+			}
+		} else {
+			m_MouseWheelChange = g_UInputMan.MouseWheelMovedByPlayer(m_Player);
+		}
 	}
 
 	/*if (m_Player >= 0 && m_Player < 4)
@@ -358,7 +370,7 @@ void AllegroInput::Update(void)
 // Method:          ConvertKeyEvent
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Converts from allegro's key push to that used by this GUI lib, with
-//                  timings for repats taken into consideration.
+//                  timings for repeats taken into consideration.
 
 void AllegroInput::ConvertKeyEvent(int allegroKey, int guilibKey, float elapsedS)
 {

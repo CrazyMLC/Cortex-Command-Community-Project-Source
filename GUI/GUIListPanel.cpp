@@ -27,25 +27,28 @@ using namespace RTE;
 GUIListPanel::GUIListPanel(GUIManager *Manager)
 : GUIPanel(Manager)
 {
-    m_BaseBitmap = 0;
-    m_DrawBitmap = 0;
-    m_FrameBitmap = 0;
-    m_Font = 0;
-    m_Items.clear();
-    m_SelectedList.clear();
-    m_UpdateLocked = false;
-    m_LargestWidth = 0;
-    m_MultiSelect = false;
-    m_LastSelected = -1;
-    m_FontColor = 0;
-    m_FontSelectColor = 0;
-    m_CapturedHorz = false;
-    m_CapturedVert = false;
-    m_ExternalCapture = false;
-    m_HotTracking = false;
-    m_HorzScrollEnabled = true;
-    m_VertScrollEnabled = true;
-    m_AlternateDrawMode = false;
+	m_BaseBitmap = 0;
+	m_DrawBitmap = 0;
+	m_FrameBitmap = 0;
+	m_Font = 0;
+	m_Items.clear();
+	m_SelectedList.clear();
+	m_UpdateLocked = false;
+	m_LargestWidth = 0;
+	m_MultiSelect = false;
+	m_LastSelected = -1;
+	m_FontColor = 0;
+	m_FontSelectColor = 0;
+	m_SelectedColorIndex = 0;
+	m_CapturedHorz = false;
+	m_CapturedVert = false;
+	m_ExternalCapture = false;
+	m_HotTracking = false;
+	m_HorzScrollEnabled = true;
+	m_VertScrollEnabled = true;
+	m_AlternateDrawMode = false;
+	m_LoopMouseScroll = false;
+	m_MouseScroll = false;
 }
 
 
@@ -58,26 +61,28 @@ GUIListPanel::GUIListPanel(GUIManager *Manager)
 GUIListPanel::GUIListPanel()
 : GUIPanel()
 {
-    m_BaseBitmap = 0;
-    m_DrawBitmap = 0;
-    m_FrameBitmap = 0;
-    m_Font = 0;    
-    m_Items.clear();
-    m_SelectedList.clear();
-    m_UpdateLocked = false;
-    m_LargestWidth = 0;
-    m_MultiSelect = false;
-    m_LastSelected = -1;
-    m_FontColor = 0;
-    m_FontSelectColor = 0;
-    m_SelectedColorIndex = 0;
-    m_CapturedHorz = false;
-    m_CapturedVert = false;
-    m_ExternalCapture = false;
-    m_HotTracking = false;
-    m_HorzScrollEnabled = true;
-    m_VertScrollEnabled = true;
-    m_AlternateDrawMode = false;
+	m_BaseBitmap = 0;
+	m_DrawBitmap = 0;
+	m_FrameBitmap = 0;
+	m_Font = 0;
+	m_Items.clear();
+	m_SelectedList.clear();
+	m_UpdateLocked = false;
+	m_LargestWidth = 0;
+	m_MultiSelect = false;
+	m_LastSelected = -1;
+	m_FontColor = 0;
+	m_FontSelectColor = 0;
+	m_SelectedColorIndex = 0;
+	m_CapturedHorz = false;
+	m_CapturedVert = false;
+	m_ExternalCapture = false;
+	m_HotTracking = false;
+	m_HorzScrollEnabled = true;
+	m_VertScrollEnabled = true;
+	m_AlternateDrawMode = false;
+	m_LoopMouseScroll = false;
+	m_MouseScroll = false;
 }
 
 
@@ -516,6 +521,24 @@ void GUIListPanel::OnMouseDown(int X, int Y, int Buttons, int Modifier)
 }
 
 
+/// <summary>
+/// Called when the mouse scroll wheel is moved.
+/// </summary>
+/// <param name="X">Mouse X position</param>
+/// <param name="Y">Mouse Y position</param>
+/// <param name="Modifier">Activated modifier buttons</param>
+void GUIListPanel::OnMouseWheelChange(int X, int Y, int Modifier, int MouseWheelChange)
+{
+	if (!m_MouseScroll) {
+		return;
+	} else if (m_VertScroll->_GetVisible() && m_VertScroll->PointInside(X, Y)) {
+		ScrollBarScrolling(MouseWheelChange);
+	} else if (PointInsideList(X, Y) && !m_MultiSelect) {
+		SelectionListScrolling(MouseWheelChange);
+	}
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Method:          SelectItem
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -676,26 +699,17 @@ void GUIListPanel::OnMouseUp(int X, int Y, int Buttons, int Modifier)
 
 void GUIListPanel::OnMouseMove(int X, int Y, int Buttons, int Modifier)
 {
-    if (m_CapturedVert)
-        m_VertScroll->OnMouseMove(X, Y, Buttons, Modifier);
-    else if (m_CapturedHorz)
-        m_HorzScroll->OnMouseMove(X, Y, Buttons, Modifier);
-    else {
-        if (PointInside(X, Y)) {
-
-            // Don't send signals or do selection if over scroll bars
-            if (m_VertScroll->_GetVisible() && X >= (m_X+m_Width)-m_VertScroll->GetWidth())
-                return;
-            if (m_HorzScroll->_GetVisible() && Y >= (m_Y+m_Height)-m_HorzScroll->GetHeight())
-                return;
-
-            // Using Hot-Tracking
-            if (m_HotTracking)
-                SelectItem(X, Y, Modifier);
-
-            SendSignal(MouseMove, Buttons);
-        }
-    }
+	if (m_CapturedVert) {
+		m_VertScroll->OnMouseMove(X, Y, Buttons, Modifier);
+	} else if (m_CapturedHorz) {
+		m_HorzScroll->OnMouseMove(X, Y, Buttons, Modifier);
+	} else if (PointInsideList(X, Y)) {
+		// Using Hot-Tracking
+		if (m_HotTracking && GetItem(X, Y) != nullptr && (GetItem(X, Y) != GetSelected())) {
+			SelectItem(X, Y, Modifier);
+		}
+		SendSignal(MouseMove, Buttons);
+	}
 }
 
 
@@ -821,6 +835,88 @@ void GUIListPanel::ScrollToBottom()
     else
         ScrollToItem(m_Items.back());
     BuildBitmap(false, true);
+}
+
+
+/// <summary>
+/// Sets whether the scroll panel scrolls in a loop or not.
+/// </summary>
+/// <param name="scrollLoop">true to scroll in a loop, false to scroll with edge stopping.</param>
+void GUIListPanel::SetMouseScrollingLoop(bool ScrollLoop)
+{
+	m_LoopMouseScroll = ScrollLoop;
+}
+
+
+/// <summary>
+/// Sets whether the list panel can be scrolled with the mouse scroll wheel.
+/// </summary>
+/// <param name="MouseScroll">true to enable scrolling, false to disable</param>
+void GUIListPanel::SetMouseScrolling(bool MouseScroll)
+{
+	m_MouseScroll = MouseScroll;
+}
+
+
+/// <summary>
+/// Perform list scrolling through the scrollbar
+/// </summary>
+/// <param name="MouseWheelChange">amount and direction of scrolling. positive to scroll up, negative to scroll down.</param>
+void GUIListPanel::ScrollBarScrolling(int MouseWheelChange)
+{
+	int newValue = 0;
+	Item* lastItem = GetItem(GetItemList()->size() - 1);
+	int avgItemHeight = static_cast<int>((GetStackHeight(lastItem) + GetItemHeight(lastItem)) / GetItemList()->size());
+	if (MouseWheelChange < 0) {
+		newValue = m_VertScroll->GetValue() - (MouseWheelChange * avgItemHeight);
+		int maxValue = GetStackHeight(lastItem) + GetItemHeight(lastItem) - m_VertScroll->GetPageSize();
+		if (maxValue < 0) {
+			newValue = 0;
+		} else if (newValue > maxValue) {
+			newValue = maxValue;
+		}
+	} else {
+		newValue = m_VertScroll->GetValue() - (MouseWheelChange * avgItemHeight);
+		if (newValue < 0) {
+			newValue = 0;
+		}
+	}
+	m_VertScroll->SetValue(newValue);
+	BuildBitmap(false, true);
+}
+
+
+/// <summary>
+/// Perform list scrolling by changing the currently selected list item.
+/// Should not be used with multiselect enabled.
+/// </summary>
+/// <param name="ScrollDir">Direction of scrolling. positive to scroll up, negative to scroll down.</param>
+void GUIListPanel::SelectionListScrolling(int ScrollDir)
+{
+	int newItemIndex = 0;
+	int OldItemIndex = GetSelectedIndex();
+	if (ScrollDir > 0) {
+		newItemIndex = OldItemIndex - 1;
+		if (newItemIndex < 0) {
+			newItemIndex = (m_LoopMouseScroll) ? (GetItemList()->size() - 1) : 0;
+		}
+	} else {
+		newItemIndex = OldItemIndex + 1;
+		int listSize = GetItemList()->size();
+		if (newItemIndex >= listSize) {
+			newItemIndex = (m_LoopMouseScroll) ? 0 : (listSize - 1);
+		}
+	}
+
+	if (newItemIndex == OldItemIndex && !m_LoopMouseScroll) {
+		if (newItemIndex == 0) {
+			SendSignal(EdgeHit, 0);
+		} else {
+			SendSignal(EdgeHit, 1);
+		}
+	} else {
+		SetSelectedIndex(newItemIndex);
+	}
 }
 
 

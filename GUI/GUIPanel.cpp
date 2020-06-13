@@ -318,6 +318,14 @@ void GUIPanel::OnMouseHover(int X, int Y, int Buttons, int Modifier)
 }
 
 
+/// <summary>
+/// Called when the mouse scroll wheel is moved.
+/// </summary>
+void GUIPanel::OnMouseWheelChange(int X, int Y, int Modifier, int MouseWheelChange)
+{
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Method:          OnKeyDown
 //////////////////////////////////////////////////////////////////////////////////////////
