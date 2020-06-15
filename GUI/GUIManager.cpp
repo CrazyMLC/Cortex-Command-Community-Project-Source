@@ -272,7 +272,9 @@ void GUIManager::Update(void)
         }
 
 		if (MouseWheelChange) {
-			CurPanel->OnMouseWheelChange(MouseX, MouseY, Mod, MouseWheelChange);
+			if (CurPanel) {
+				CurPanel->OnMouseWheelChange(MouseX, MouseY, Mod, MouseWheelChange);
+			}
 		}
 
         m_MouseOverPanel = CurPanel;
