@@ -47,7 +47,7 @@ GUIListPanel::GUIListPanel(GUIManager *Manager)
 	m_HorzScrollEnabled = true;
 	m_VertScrollEnabled = true;
 	m_AlternateDrawMode = false;
-	m_LoopMouseScroll = false;
+	m_LoopSelectionScroll = false;
 	m_MouseScroll = false;
 }
 
@@ -81,7 +81,7 @@ GUIListPanel::GUIListPanel()
 	m_HorzScrollEnabled = true;
 	m_VertScrollEnabled = true;
 	m_AlternateDrawMode = false;
-	m_LoopMouseScroll = false;
+	m_LoopSelectionScroll = false;
 	m_MouseScroll = false;
 }
 
@@ -521,20 +521,14 @@ void GUIListPanel::OnMouseDown(int X, int Y, int Buttons, int Modifier)
 }
 
 
-/// <summary>
-/// Called when the mouse scroll wheel is moved.
-/// </summary>
-/// <param name="X">Mouse X position</param>
-/// <param name="Y">Mouse Y position</param>
-/// <param name="Modifier">Activated modifier buttons</param>
-void GUIListPanel::OnMouseWheelChange(int X, int Y, int Modifier, int MouseWheelChange)
+void GUIListPanel::OnMouseWheelChange(int x, int y, int modifier, int mouseWheelChange)
 {
 	if (!m_MouseScroll) {
 		return;
-	} else if (m_VertScroll->_GetVisible() && m_VertScroll->PointInside(X, Y)) {
-		ScrollBarScrolling(MouseWheelChange);
-	} else if (PointInsideList(X, Y) && !m_MultiSelect) {
-		SelectionListScrolling(MouseWheelChange);
+	} else if (m_VertScroll->_GetVisible() && m_VertScroll->PointInside(x, y)) {
+		ScrollBarScrolling(mouseWheelChange);
+	} else if (PointInsideList(x, y) && !m_MultiSelect) {
+		SelectionListScrolling(mouseWheelChange);
 	}
 }
 
@@ -838,45 +832,29 @@ void GUIListPanel::ScrollToBottom()
 }
 
 
-/// <summary>
-/// Sets whether the scroll panel scrolls in a loop or not.
-/// </summary>
-/// <param name="scrollLoop">true to scroll in a loop, false to scroll with edge stopping.</param>
-void GUIListPanel::SetMouseScrollingLoop(bool ScrollLoop)
+void GUIListPanel::SetSelectionScrollingLoop(bool scrollLoop)
 {
-	m_LoopMouseScroll = ScrollLoop;
+	m_LoopSelectionScroll = scrollLoop;
 }
 
 
-/// <summary>
-/// Sets whether the list panel can be scrolled with the mouse scroll wheel.
-/// </summary>
-/// <param name="MouseScroll">true to enable scrolling, false to disable</param>
-void GUIListPanel::SetMouseScrolling(bool MouseScroll)
+void GUIListPanel::SetMouseScrolling(bool mouseScroll)
 {
-	m_MouseScroll = MouseScroll;
+	m_MouseScroll = mouseScroll;
 }
 
 
-/// <summary>
-/// Perform list scrolling through the scrollbar
-/// </summary>
-/// <param name="MouseWheelChange">amount and direction of scrolling. positive to scroll up, negative to scroll down.</param>
-void GUIListPanel::ScrollBarScrolling(int MouseWheelChange)
+void GUIListPanel::ScrollBarScrolling(int mouseWheelChange)
 {
 	int newValue = 0;
 	Item* lastItem = GetItem(GetItemList()->size() - 1);
 	int avgItemHeight = static_cast<int>((GetStackHeight(lastItem) + GetItemHeight(lastItem)) / GetItemList()->size());
-	if (MouseWheelChange < 0) {
-		newValue = m_VertScroll->GetValue() - (MouseWheelChange * avgItemHeight);
+	if (mouseWheelChange < 0) {
+		newValue = m_VertScroll->GetValue() - (mouseWheelChange * avgItemHeight);
 		int maxValue = GetStackHeight(lastItem) + GetItemHeight(lastItem) - m_VertScroll->GetPageSize();
-		if (maxValue < 0) {
-			newValue = 0;
-		} else if (newValue > maxValue) {
-			newValue = maxValue;
-		}
+		newValue = static_cast<int>(Limit(newValue, maxValue, 0));
 	} else {
-		newValue = m_VertScroll->GetValue() - (MouseWheelChange * avgItemHeight);
+		newValue = m_VertScroll->GetValue() - (mouseWheelChange * avgItemHeight);
 		if (newValue < 0) {
 			newValue = 0;
 		}
@@ -886,37 +864,27 @@ void GUIListPanel::ScrollBarScrolling(int MouseWheelChange)
 }
 
 
-/// <summary>
-/// Perform list scrolling by changing the currently selected list item.
-/// Should not be used with multiselect enabled.
-/// </summary>
-/// <param name="ScrollDir">Direction of scrolling. positive to scroll up, negative to scroll down.</param>
-void GUIListPanel::SelectionListScrolling(int ScrollDir)
+void GUIListPanel::SelectionListScrolling(int scrollDir)
 {
-	int newItemIndex = 0;
-	int OldItemIndex = GetSelectedIndex();
-	if (ScrollDir > 0) {
-		newItemIndex = OldItemIndex - 1;
-		if (newItemIndex < 0) {
-			newItemIndex = (m_LoopMouseScroll) ? (GetItemList()->size() - 1) : 0;
-		}
-	} else {
-		newItemIndex = OldItemIndex + 1;
-		int listSize = GetItemList()->size();
-		if (newItemIndex >= listSize) {
-			newItemIndex = (m_LoopMouseScroll) ? 0 : (listSize - 1);
-		}
+	std::size_t itemListSize = GetItemList()->size();
+	if (!itemListSize || !scrollDir) {
+		return;
 	}
 
-	if (newItemIndex == OldItemIndex && !m_LoopMouseScroll) {
-		if (newItemIndex == 0) {
-			SendSignal(EdgeHit, 0);
+	int oldItemIndex = GetSelectedIndex();
+	int newItemIndex = (scrollDir > 0) ? (oldItemIndex - 1) : (oldItemIndex + 1);
+	if (newItemIndex < 0 || newItemIndex >= itemListSize) {
+		if (m_LoopSelectionScroll) {
+			newItemIndex = (newItemIndex + itemListSize) % itemListSize;
 		} else {
-			SendSignal(EdgeHit, 1);
+			newItemIndex = Limit(newItemIndex, itemListSize - 1, 0);
+			if (oldItemIndex == newItemIndex) {
+				SendSignal(EdgeHit, (newItemIndex < 0) ? 0 : 1);
+				return;
+			}
 		}
-	} else {
-		SetSelectedIndex(newItemIndex);
 	}
+	SetSelectedIndex(newItemIndex);
 }
 
 

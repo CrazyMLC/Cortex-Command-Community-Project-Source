@@ -240,11 +240,11 @@ public:
 	/// <summary>
 	/// Called when the mouse scroll wheel is moved.
 	/// </summary>
-	/// <param name="X">Mouse X position</param>
-	/// <param name="Y">Mouse Y position</param>
-	/// <param name="Modifier">Activated modifier buttons</param>
-	/// <param name="mouseWheelChange">the amount of wheel movement. positive is scroll up, negative is scroll down.</param>
-	virtual void OnMouseWheelChange(int X, int Y, int Modifier, int mouseWheelChange);
+	/// <param name="x">Mouse X position.</param>
+	/// <param name="y">Mouse Y position.</param>
+	/// <param name="modifier">Activated modifier buttons.</param>
+	/// <param name="mouseWheelChange">The amount of wheel movement. Positive is scroll up, negative is scroll down.</param>
+	virtual void OnMouseWheelChange(int x, int y, int modifier, int mouseWheelChange) {};
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

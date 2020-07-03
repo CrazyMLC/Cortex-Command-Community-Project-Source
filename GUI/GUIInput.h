@@ -175,9 +175,9 @@ public:
 
 
 	/// <summary>
-	/// This function returns how much the mouse scroll wheel has moved. positive integer is scroll up, negative is scroll down.
+	/// This function returns how much the mouse scroll wheel has moved. Positive integer is scroll up, negative is scroll down.
 	/// </summary>
-	/// <returns>mouse scroll wheel movement in integer value</returns>
+	/// <returns>Mouse scroll wheel movement in integer value.</returns>
 	int GetMouseWheelChange() {
 		return m_MouseWheelChange;
 	}

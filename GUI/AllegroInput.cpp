@@ -264,10 +264,9 @@ void AllegroInput::Update(void)
 		}
 
 		if (m_Player < 0 || m_Player >= 4) {
-			int players = 4;
-			for (int i = 0; i < players; i++) {
+			for (int i = 0; i < 4; i++) {
 				m_MouseWheelChange = g_UInputMan.MouseWheelMovedByPlayer(i);
-				if (abs(m_MouseWheelChange) >= 1) {
+				if (m_MouseWheelChange) {
 					break;
 				}
 			}

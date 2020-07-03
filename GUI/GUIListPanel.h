@@ -213,10 +213,11 @@ public:
 	/// <summary>
 	/// Called when the mouse scroll wheel is moved.
 	/// </summary>
-	/// <param name="X">Mouse X position</param>
-	/// <param name="Y">Mouse Y position</param>
-	/// <param name="Modifier">Activated modifier buttons</param>
-	void OnMouseWheelChange(int X, int Y, int Modifier, int mouseWheelChange) override;
+	/// <param name="x">Mouse X position.</param>
+	/// <param name="y">Mouse Y position.</param>
+	/// <param name="modifier">Activated modifier buttons.</param>
+	/// <param name="mouseWheelChange">The amount of wheel movement. Positive is scroll up, negative is scroll down.</param>
+	void OnMouseWheelChange(int x, int y, int modifier, int mouseWheelChange) override;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -513,15 +514,15 @@ public:
 	/// <summary>
 	/// Sets whether the scroll panel scrolls in a loop or not.
 	/// </summary>
-	/// <param name="scrollLoop">true to scroll in a loop, false to scroll with edge stopping.</param>
-	void SetMouseScrollingLoop(bool ScrollLoop);
+	/// <param name="scrollLoop">True to scroll in a loop, false to scroll with edge stopping.</param>
+	void SetSelectionScrollingLoop(bool scrollLoop);
 
 
 	/// <summary>
 	/// Sets whether the list panel can be scrolled with the mouse scroll wheel.
 	/// </summary>
-	/// <param name="MouseScroll">true to enable scrolling, false to disable</param>
-	void SetMouseScrolling(bool MouseScroll);
+	/// <param name="mouseScroll">True to enable scrolling, false to disable.</param>
+	void SetMouseScrolling(bool mouseScroll);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -573,17 +574,17 @@ private:
 
 
 	/// <summary>
-	/// Perform list scrolling through the scrollbar
+	/// Perform list scrolling through the scrollbar.
 	/// </summary>
-	/// <param name="MouseWheelChange">amount and direction of scrolling. positive to scroll up, negative to scroll down.</param>
-	void ScrollBarScrolling(int MouseWheelChange);
+	/// <param name="MouseWheelChange">Amount and direction of scrolling. Positive to scroll up, negative to scroll down.</param>
+	void ScrollBarScrolling(int mouseWheelChange);
 
 
 	/// <summary>
-	/// Perform list scrolling by changing the currently selected list item
+	/// Perform list scrolling by changing the currently selected list item.
 	/// </summary>
-	/// <param name="MouseWheelChange">amount and direction of scrolling. positive to scroll up, negative to scroll down.</param>
-	void SelectionListScrolling(int MouseWheelChange);
+	/// <param name="MouseWheelChange">Amount and direction of scrolling. Positive to scroll up, negative to scroll down.</param>
+	void SelectionListScrolling(int mouseWheelChange);
 
 
 // Members    
@@ -609,8 +610,8 @@ private:
     bool                m_MultiSelect;
     bool                m_HotTracking;
     int                    m_LastSelected;
-	bool				m_LoopMouseScroll; //!< whether the list panel scrolls in a loop or not, with the mouse scroll wheel.
-	bool				m_MouseScroll; //!< whether the list panel enables scrolling with the mouse scroll wheel.
+	bool				m_LoopSelectionScroll; //!< Whether the list panel scrolls in a loop or not, while scrolling the selection list (as opposed to the scrollbar).
+	bool				m_MouseScroll; //!< Whether the list panel enables scrolling with the mouse scroll wheel.
     
     // This draws items differently, not with boxes etc.
     bool                m_AlternateDrawMode;
